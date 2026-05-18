@@ -549,11 +549,10 @@
         const skySphere = new THREE.Mesh(skyGeometry, skyMaterial);
         scene.add(skySphere);
 
-        // Create Moon with texture
+        // Create Moon - centered and with slow loop rotation
         const moonGeometry = new THREE.SphereGeometry(8, 32, 32);
         const textureLoader = new THREE.TextureLoader();
         
-        // Moon material with procedural texture
         const moonMaterial = new THREE.MeshStandardMaterial({
             color: 0xcccccc,
             roughness: 0.9,
@@ -576,7 +575,8 @@
         );
         
         const moon = new THREE.Mesh(moonGeometry, moonMaterial);
-        moon.position.set(-30, 15, -50);
+        // Position moon in center - slightly back and up
+        moon.position.set(0, 5, -40);
         scene.add(moon);
         
         // Moon light
@@ -602,7 +602,6 @@
                 (Math.random() - 0.5) * 2000,
                 (Math.random() - 0.5) * 2000
             );
-            // Store initial velocity for movement through space
             starsVelocities.push(
                 (Math.random() - 0.5) * 0.1,
                 (Math.random() - 0.5) * 0.1,
@@ -748,6 +747,7 @@
         // Animation loop
         let time = 0;
         let lastTime = performance.now();
+        let moonOrbitAngle = 0;
         
         function animate(currentTime) {
             requestAnimationFrame(animate);
@@ -764,28 +764,32 @@
             // Animate stars - move through space when scrolling
             const positions = stars.geometry.attributes.position.array;
             for (let i = 0; i < positions.length; i += 3) {
-                // Move stars toward camera when scrolling down
                 positions[i + 2] += scrollDelta * 0.05;
                 
-                // Reset stars that go past the camera
                 if (positions[i + 2] > 100) {
                     positions[i + 2] = -1000;
                     positions[i] = (Math.random() - 0.5) * 2000;
                     positions[i + 1] = (Math.random() - 0.5) * 2000;
                 }
                 
-                // Also add gentle drift
                 positions[i] += Math.sin(time + i) * 0.01;
                 positions[i + 1] += Math.cos(time + i) * 0.01;
             }
             stars.geometry.attributes.position.needsUpdate = true;
             
-            // Rotate stars for depth effect
             stars.rotation.y += 0.0001;
             stars.rotation.x += 0.00005;
 
-            // Animate moon rotation
-            moon.rotation.y += 0.001;
+            // Moon slow loop rotation animation
+            moonOrbitAngle += 0.0003; // Very slow rotation speed
+            moon.position.x = Math.sin(moonOrbitAngle) * 15; // Circular orbit radius 15
+            moon.position.z = -40 + Math.cos(moonOrbitAngle) * 15;
+            
+            // Moon rotation on its own axis (slower)
+            moon.rotation.y += 0.0005;
+            
+            // Update moon light position
+            moonLight.position.copy(moon.position);
 
             // Animate lights
             lights.forEach((light, i) => {
@@ -798,11 +802,10 @@
             // Update meteors
             meteors.forEach(meteor => meteor.update(deltaTime));
 
-            // Camera movement based on scroll - enhanced space travel
+            // Camera movement based on scroll
             const targetCameraY = -(scrollY * 0.002);
             camera.position.y += (targetCameraY - camera.position.y) * 0.1;
             
-            // Add forward movement when scrolling
             const targetCameraZ = 5 - (scrollY * 0.003);
             camera.position.z += (targetCameraZ - camera.position.z) * 0.05;
             
