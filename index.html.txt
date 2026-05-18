@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bader Khaldi - Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow-x: hidden;
+            background: #000;
+            color: white;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        #content {
+            position: relative;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        .section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+        
+        .hero {
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(45deg); }
+        }
+        
+        .hero p {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: #aaa;
+            margin-bottom: 40px;
+        }
+        
+        .timeline-year {
+            position: fixed;
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%);
+            font-size: clamp(4rem, 10vw, 8rem);
+            font-weight: 900;
+            color: #ffffff;
+            z-index: 5;
+            pointer-events: none;
+            text-shadow: 
+                0 0 4px rgba(255, 255, 255, 0.3),
+                0 0 8px rgba(255, 255, 255, 0.2),
+                0 0 12px rgba(0, 255, 255, 0.3),
+                0 0 16px rgba(0, 255, 255, 0.2),
+                0 0 24px rgba(0, 255, 255, 0.15),
+                0 0 32px rgba(255, 0, 255, 0.15),
+                0 0 40px rgba(255, 0, 255, 0.1);
+            animation: starGlow 3s ease-in-out infinite;
+            filter: brightness(1.2);
+        }
+        
+        @keyframes starGlow {
+            0%, 100% {
+                text-shadow: 
+                    0 0 4px rgba(255, 255, 255, 0.4),
+                    0 0 8px rgba(255, 255, 255, 0.3),
+                    0 0 12px rgba(0, 255, 255, 0.4),
+                    0 0 16px rgba(0, 255, 255, 0.3),
+                    0 0 24px rgba(0, 255, 255, 0.2),
+                    0 0 32px rgba(255, 0, 255, 0.2),
+                    0 0 40px rgba(255, 0, 255, 0.15);
+                filter: brightness(1.2) hue-rotate(0deg);
+            }
+            50% {
+                text-shadow: 
+                    0 0 6px rgba(255, 255, 255, 0.4),
+                    0 0 10px rgba(255, 255, 255, 0.35),
+                    0 0 14px rgba(255, 0, 255, 0.4),
+                    0 0 20px rgba(255, 0, 255, 0.3),
+                    0 0 28px rgba(255, 0, 255, 0.2),
+                    0 0 36px rgba(0, 255, 255, 0.2),
+                    0 0 48px rgba(0, 255, 255, 0.15);
+                filter: brightness(1.3) hue-rotate(20deg);
+            }
+        }
+        
+        .glass-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            pointer-events: all;
+        }
+        
+        .glass-btn {
+            padding: 16px 40px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 0.5px solid rgba(255, 255, 255, 0.18);
+            border-radius: 14px;
+            color: white;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: -0.4px;
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 
+                0 1px 2px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .glass-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+        }
+        
+        .glass-btn:active {
+            transform: scale(0.96);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .glass-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(0, 255, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .glass-btn.email:hover {
+            box-shadow: 
+                0 4px 12px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(255, 0, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .back-to-top:hover {
+            transform: translateY(-4px);
+        }
+        
+        .experience-section {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .experience-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 0.5px solid rgba(255, 255, 255, 0.18);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            margin: 40px 0;
+            pointer-events: all;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .experience-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+        }
+        
+        .experience-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(0, 255, 255, 0.4);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(0, 255, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        .experience-card h2 {
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            margin-bottom: 10px;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .experience-card h3 {
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+        
+        .experience-card .period {
+            font-size: 1.2rem;
+            color: #ffff00;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+        }
+        
+        .experience-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .experience-card li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #ccc;
+            line-height: 1.6;
+        }
+        
+        .experience-card li:before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: #00ffff;
+            font-size: 1.5rem;
+        }
+        
+        .journey-section {
+            text-align: center;
+        }
+        
+        .journey-section h2 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            margin-bottom: 20px;
+            color: #00ffff;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+        }
+        
+        .journey-section p {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: #aaa;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+        
+        .footer-section {
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            padding: 60px 20px;
+        }
+        
+        .footer-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            pointer-events: all;
+        }
+        
+        .scroll-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            animation: bounce 2s infinite;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        .scroll-indicator span {
+            display: block;
+            width: 30px;
+            height: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 25px;
+            position: relative;
+        }
+        
+        .scroll-indicator span:before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: scrollDown 2s infinite;
+        }
+        
+        @keyframes scrollDown {
+            0% { top: 10px; opacity: 1; }
+            100% { top: 30px; opacity: 0; }
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 255, 0, 0.9);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .timeline-year {
+                right: 20px;
+                font-size: 4rem;
+            }
+            
+            .experience-card {
+                padding: 25px;
+            }
+            
+            .glass-buttons, .footer-buttons {
+                flex-direction: column;
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .back-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div class="timeline-year" id="timeline-year">1985</div>
+    
+    <button class="glass-btn back-to-top" id="backToTop" onclick="scrollToTop()">
+        ↑
+    </button>
+    
+    <div id="content">
+        <section class="section hero">
+            <h1>BADER KHALDI</h1>
+            <p>Innovator • Leader • Visionary</p>
+            <div class="glass-buttons">
+                <a href="mailto:bader.khaldi@example.com" class="glass-btn email">
+                    <span>✉</span> Email Me
+                </a>
+                <a href="https://linkedin.com/in/baderkhaldi" target="_blank" class="glass-btn">
+                    <span>in</span> LinkedIn
+                </a>
+            </div>
+        </section>
+        
+        <section class="section journey-section">
+            <h2>The Journey</h2>
+            <p>
+                Born in 1985, Bader Khaldi's story is one of continuous growth, innovation, and leadership. 
+                From early beginnings to transformative roles at global companies, every year has been a stepping stone 
+                to excellence.
+            </p>
+        </section>
+        
+        <section class="section experience-section">
+            <div class="experience-card">
+                <h2>Amazon</h2>
+                <h3>Manager</h3>
+                <div class="period">2015 - 2020</div>
+                <ul>
+                    <li>Led cross-functional teams of 50+ employees across multiple departments</li>
+                    <li>Implemented innovative operational strategies that increased efficiency by 35%</li>
+                    <li>Managed $10M+ annual budget with consistent cost optimization</li>
+                    <li>Drove customer satisfaction scores from 82% to 96% within 2 years</li>
+                    <li>Mentored and developed 15+ team members into leadership positions</li>
+                    <li>Spearheaded digital transformation initiatives across the organization</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="section journey-section" style="min-height: 50vh;">
+            <h2>Continue Scrolling</h2>
+            <p>Explore the timeline and experience the journey through time...</p>
+        </section>
+        
+        <section class="footer-section">
+            <h2 style="color: #00ffff; text-shadow: 0 0 30px rgba(0, 255, 255, 0.6);">Share This Portfolio</h2>
+            <div class="footer-buttons">
+                <button class="glass-btn" onclick="sharePortfolio()">
+                    <span>📤</span> Share
+                </button>
+                <button class="glass-btn" onclick="copyLink()">
+                    <span>📋</span> Copy Link
+                </button>
+            </div>
+        </section>
+    </div>
+    
+    <div class="scroll-indicator">
+        <span></span>
+    </div>
+    
+    <div class="toast" id="toast">Link copied to clipboard!</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.z = 5;
+
+        const renderer = new THREE.WebGLRenderer({ 
+            antialias: true, 
+            alpha: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Skysphere with gradient
+        const skyGeometry = new THREE.SphereGeometry(1000, 32, 32);
+        const skyMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                topColor: { value: new THREE.Color(0x000033) },
+                bottomColor: { value: new THREE.Color(0x000000) },
+                offset: { value: 33 },
+                exponent: { value: 0.6 }
+            },
+            vertexShader: `
+                varying vec3 vWorldPosition;
+                void main() {
+                    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                    vWorldPosition = worldPosition.xyz;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 topColor;
+                uniform vec3 bottomColor;
+                uniform float offset;
+                uniform float exponent;
+                varying vec3 vWorldPosition;
+                void main() {
+                    float h = normalize(vWorldPosition + offset).y;
+                    gl_FragColor = vec4(mix(bottomColor, topColor, max(pow(max(h, 0.0), exponent), 0.0)), 1.0);
+                }
+            `,
+            side: THREE.BackSide
+        });
+        const skySphere = new THREE.Mesh(skyGeometry, skyMaterial);
+        scene.add(skySphere);
+
+        // Create Moon with texture
+        const moonGeometry = new THREE.SphereGeometry(8, 32, 32);
+        const textureLoader = new THREE.TextureLoader();
+        
+        // Moon material with procedural texture
+        const moonMaterial = new THREE.MeshStandardMaterial({
+            color: 0xcccccc,
+            roughness: 0.9,
+            metalness: 0.1,
+            emissive: 0x111111,
+            emissiveIntensity: 0.2
+        });
+        
+        // Try to load moon texture from free CDN
+        textureLoader.load(
+            'https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/textures/planets/moon_1024.jpg',
+            function(texture) {
+                moonMaterial.map = texture;
+                moonMaterial.needsUpdate = true;
+            },
+            undefined,
+            function(error) {
+                console.log('Moon texture failed to load, using procedural texture');
+            }
+        );
+        
+        const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+        moon.position.set(-30, 15, -50);
+        scene.add(moon);
+        
+        // Moon light
+        const moonLight = new THREE.PointLight(0xffffff, 0.5, 100);
+        moonLight.position.copy(moon.position);
+        scene.add(moonLight);
+
+        // Stars with animation
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsMaterial = new THREE.PointsMaterial({ 
+            color: 0xffffff, 
+            size: 2, 
+            sizeAttenuation: true,
+            transparent: true,
+            opacity: 1
+        });
+        const starsVertices = [];
+        const starsVelocities = [];
+        
+        for (let i = 0; i < 2000; i++) {
+            starsVertices.push(
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000
+            );
+            // Store initial velocity for movement through space
+            starsVelocities.push(
+                (Math.random() - 0.5) * 0.1,
+                (Math.random() - 0.5) * 0.1,
+                (Math.random() - 0.5) * 0.1
+            );
+        }
+        starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+        const stars = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(stars);
+
+        // Colored lights
+        const lights = [];
+        const lightColors = [0x00ffff, 0xff00ff, 0xffff00, 0x00ff00, 0xff0000];
+        
+        for (let i = 0; i < 5; i++) {
+            const light = new THREE.PointLight(lightColors[i], 2, 100);
+            light.position.set(
+                Math.cos(i * Math.PI * 2 / 5) * 20,
+                Math.sin(i * Math.PI * 2 / 5) * 10,
+                -10
+            );
+            lights.push(light);
+            scene.add(light);
+        }
+
+        // Ambient light
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+        scene.add(ambientLight);
+
+        // Meteors (shooting stars)
+        const meteors = [];
+        const meteorCount = 500;
+        
+        class Meteor {
+            constructor() {
+                this.reset();
+                
+                const geometry = new THREE.SphereGeometry(0.15, 8, 8);
+                const material = new THREE.MeshBasicMaterial({
+                    color: 0xFFFFCC,
+                    transparent: true,
+                    opacity: 0.9
+                });
+                this.mesh = new THREE.Mesh(geometry, material);
+                
+                const trailGeometry = new THREE.BufferGeometry();
+                const trailPositions = new Float32Array(30);
+                trailGeometry.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
+                const trailMaterial = new THREE.LineBasicMaterial({
+                    color: 0xFFFFAA,
+                    transparent: true,
+                    opacity: 0.6,
+                    linewidth: 2
+                });
+                this.trail = new THREE.Line(trailGeometry, trailMaterial);
+                
+                scene.add(this.mesh);
+                scene.add(this.trail);
+            }
+            
+            reset() {
+                this.position = new THREE.Vector3(
+                    -50 + Math.random() * 20,
+                    30 + Math.random() * 20,
+                    -50 + Math.random() * 100
+                );
+                
+                this.velocity = new THREE.Vector3(0.8, -1.2, 0.3);
+                this.life = Math.random() * 4 + 3;
+                this.age = 0;
+                this.trailPositions = [];
+            }
+            
+            update(deltaTime) {
+                this.age += deltaTime;
+                
+                if (this.age > this.life || this.position.y < -30) {
+                    this.reset();
+                }
+                
+                this.position.add(this.velocity.clone().multiplyScalar(deltaTime * 3));
+                
+                if (this.mesh) {
+                    this.mesh.position.copy(this.position);
+                    
+                    this.trailPositions.unshift(this.position.clone());
+                    if (this.trailPositions.length > 10) {
+                        this.trailPositions.pop();
+                    }
+                    
+                    const positions = this.trail.geometry.attributes.position.array;
+                    for (let i = 0; i < this.trailPositions.length; i++) {
+                        positions[i * 3] = this.trailPositions[i].x;
+                        positions[i * 3 + 1] = this.trailPositions[i].y;
+                        positions[i * 3 + 2] = this.trailPositions[i].z;
+                    }
+                    this.trail.geometry.attributes.position.needsUpdate = true;
+                }
+            }
+        }
+        
+        for (let i = 0; i < meteorCount; i++) {
+            meteors.push(new Meteor());
+        }
+
+        // Scroll handling
+        let scrollY = 0;
+        let prevScrollY = 0;
+        let currentYear = 1985;
+        const birthYear = 1985;
+        const currentYearActual = 2025;
+        
+        function updateTimeline() {
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scrollPercent = Math.max(0, Math.min(1, scrollY / maxScroll));
+            const yearRange = currentYearActual - birthYear;
+            const newYear = Math.floor(birthYear + (scrollPercent * yearRange));
+            
+            if (newYear !== currentYear) {
+                currentYear = newYear;
+                document.getElementById('timeline-year').textContent = currentYear;
+            }
+        }
+
+        function onScroll() {
+            scrollY = window.pageYOffset || document.documentElement.scrollTop;
+            updateTimeline();
+            
+            const indicator = document.querySelector('.scroll-indicator');
+            const backToTop = document.getElementById('backToTop');
+            
+            if (scrollY > 100) {
+                indicator.style.opacity = '0';
+                backToTop.classList.add('visible');
+            } else {
+                indicator.style.opacity = '1';
+                backToTop.classList.remove('visible');
+            }
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        
+        // Animation loop
+        let time = 0;
+        let lastTime = performance.now();
+        
+        function animate(currentTime) {
+            requestAnimationFrame(animate);
+            
+            const deltaTime = (currentTime - lastTime) / 1000;
+            lastTime = currentTime;
+            
+            time += deltaTime;
+
+            // Calculate scroll delta for space travel effect
+            const scrollDelta = scrollY - prevScrollY;
+            prevScrollY = scrollY;
+
+            // Animate stars - move through space when scrolling
+            const positions = stars.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+                // Move stars toward camera when scrolling down
+                positions[i + 2] += scrollDelta * 0.05;
+                
+                // Reset stars that go past the camera
+                if (positions[i + 2] > 100) {
+                    positions[i + 2] = -1000;
+                    positions[i] = (Math.random() - 0.5) * 2000;
+                    positions[i + 1] = (Math.random() - 0.5) * 2000;
+                }
+                
+                // Also add gentle drift
+                positions[i] += Math.sin(time + i) * 0.01;
+                positions[i + 1] += Math.cos(time + i) * 0.01;
+            }
+            stars.geometry.attributes.position.needsUpdate = true;
+            
+            // Rotate stars for depth effect
+            stars.rotation.y += 0.0001;
+            stars.rotation.x += 0.00005;
+
+            // Animate moon rotation
+            moon.rotation.y += 0.001;
+
+            // Animate lights
+            lights.forEach((light, i) => {
+                const angle = time * 0.5 + (i * Math.PI * 2 / lights.length);
+                light.position.x = Math.cos(angle) * 25;
+                light.position.y = Math.sin(angle * 0.5) * 15;
+                light.position.z = Math.sin(angle) * 20 - 10;
+            });
+
+            // Update meteors
+            meteors.forEach(meteor => meteor.update(deltaTime));
+
+            // Camera movement based on scroll - enhanced space travel
+            const targetCameraY = -(scrollY * 0.002);
+            camera.position.y += (targetCameraY - camera.position.y) * 0.1;
+            
+            // Add forward movement when scrolling
+            const targetCameraZ = 5 - (scrollY * 0.003);
+            camera.position.z += (targetCameraZ - camera.position.z) * 0.05;
+            
+            const targetRotationX = scrollY * 0.00005;
+            camera.rotation.x += (targetRotationX - camera.rotation.x) * 0.1;
+
+            renderer.render(scene, camera);
+        }
+
+        animate(performance.now());
+        updateTimeline();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }, { passive: true });
+        
+        // Utility functions
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function sharePortfolio() {
+            const url = 'https://1000game.github.io/time/';
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Bader Khaldi - Portfolio',
+                    text: 'Check out my portfolio!',
+                    url: url
+                }).catch(err => console.log('Share failed:', err));
+            } else {
+                copyLink();
+            }
+        }
+        
+        function copyLink() {
+            const url = 'https://1000game.github.io/time/';
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Link copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                showToast('Failed to copy link');
+            });
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
